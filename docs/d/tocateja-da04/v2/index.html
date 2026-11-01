@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tocateja · Bar de tapas · Granada</title>
+<meta name="description" content="Carta digital de Tocateja en Granada. Disponible en español, inglés y alemán.">
+<meta name="theme-color" content="#5b3a1a">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--azul:#0f2a47;--azul2:#1c4670;--arena:#f3ead9;--hueso:#fbf7ef;--tomate:#b0361f;--oliva:#6b7a3a;--tinta:#1d2733;--linea:#d9ccb2;--calido:#8a5a45}
+:root{--azul:#5b3a1a;--azul2:#5b3a1a;--tomate:#b8321f}
+@media(prefers-color-scheme:dark){:root{--hueso:#0c1a2b;--arena:#13263c;--tinta:#eee6d6;--linea:#2c4460;--tomate:#ee7a62;--oliva:#a7b865}}
+*{box-sizing:border-box}html{scroll-behavior:smooth;background:#e9dfc9}
+@media(min-width:700px){body{max-width:520px;margin:0 auto;box-shadow:0 0 40px #0003}}
+body{margin:0;background:var(--hueso);color:var(--tinta);font-family:Georgia,'Times New Roman',serif;line-height:1.45;padding-bottom:20px}
+h1,h2,h3{font-weight:400;margin:0}
+.portada{background:linear-gradient(180deg,var(--azul) 0%,var(--azul2) 65%,var(--calido) 100%);color:#fff;text-align:center;padding:56px 24px 40px;position:relative}
+.langs{position:absolute;top:14px;right:14px;display:flex;gap:6px}
+.langs button{background:transparent;border:1px solid #ffffff66;color:#fff;border-radius:14px;padding:3px 9px;font:12px sans-serif;cursor:pointer}
+.langs button.on{background:#fff;color:var(--azul)}
+.faro{width:46px;height:46px;margin:0 auto 10px;stroke:#fff;fill:none;stroke-width:1.6}
+.portada h1{font-size:46px;letter-spacing:.28em;padding-left:.28em}
+.portada .sub{letter-spacing:.3em;font-size:12px;text-transform:uppercase;opacity:.85;margin-top:4px}
+.lema{font-style:italic;font-size:19px;margin:26px auto 4px;max-width:420px}
+.frase{font-size:13px;opacity:.85;font-family:sans-serif}
+.cta{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+.btn{display:inline-block;padding:12px 22px;border-radius:30px;font:600 14px sans-serif;text-decoration:none;border:1px solid #fff;color:#fff}
+.btn.rojo{background:var(--tomate);border-color:var(--tomate)}
+.tri{height:4px;background:linear-gradient(90deg,#5b3a1a 0.0% 33.3%,#ffffff 33.3% 66.7%,#b8321f 66.7% 100.0%)}
+nav.cats{position:sticky;top:0;z-index:5;background:var(--hueso);border-bottom:1px solid var(--linea);display:flex;gap:8px;overflow-x:auto;padding:10px 12px;scrollbar-width:none}
+nav.cats a{white-space:nowrap;padding:7px 14px;border:1px solid var(--linea);border-radius:20px;text-decoration:none;color:var(--tinta);font:13px sans-serif}
+main{max-width:720px;margin:0 auto;padding:0 18px}
+section{padding-top:34px}
+.filtros{display:flex;gap:8px;padding-top:22px;font:13px sans-serif}
+.filtros button{border:1px solid var(--linea);background:transparent;color:var(--tinta);padding:6px 13px;border-radius:18px;cursor:pointer}
+.filtros button.on{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.dest{background:linear-gradient(135deg,var(--azul),var(--calido));color:#fff;border-radius:16px;padding:20px;margin-top:30px}
+.dest h2{font-size:22px;font-style:italic;margin-bottom:10px}
+.dest .it{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #ffffff30;cursor:pointer}
+.sec h2{font-size:28px;color:var(--azul);border-bottom:1px solid var(--linea);padding-bottom:6px}
+@media(prefers-color-scheme:dark){.sec h2{color:var(--tinta)}}
+.sec .es{font:italic 14px Georgia;opacity:.7;margin:4px 0 6px}
+.nota{font:12px sans-serif;background:var(--arena);padding:6px 10px;border-radius:8px;display:inline-block;margin:6px 0}
+.plato{padding:12px 0;cursor:pointer}
+.plato .l1{display:flex;align-items:baseline;gap:8px}
+.plato .n{font-size:17px}
+.plato .pt{flex:1;border-bottom:2px dotted var(--linea);transform:translateY(-4px)}
+.plato .pr{color:var(--tomate);font-weight:700;font-family:sans-serif}
+.plato.con-foto{display:flex;gap:14px;align-items:center;border-bottom:1px solid var(--linea)}
+.plato.con-foto .tx{flex:1;min-width:0}
+.thumb{width:92px;height:92px;object-fit:cover;border-radius:12px;flex:none}
+.thumb.vacio{background:var(--arena)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:10px}
+.card{padding:0;border-radius:14px;overflow:hidden;background:var(--arena)}
+.card img,.card .sinfoto{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.sinfoto{background:linear-gradient(135deg,var(--azul2),#8a5a45);opacity:.35}
+.card .ct{padding:10px 12px 12px}.card .n{font-size:15px;line-height:1.25}.card .pr{color:var(--tomate);font:700 15px sans-serif;margin-top:4px}
+.rev{padding:0;margin:18px 0;border-radius:16px;overflow:hidden;background:var(--arena)}
+.rev img,.rev .sinfoto{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+.rev .ct{padding:14px 16px 16px}.rev .n{font-size:20px}
+nav.cats a.on{background:var(--azul);color:#fff;border-color:var(--azul)}
+.plato .d{font:14px sans-serif;opacity:.8;margin-top:3px}
+.tag{display:inline-block;font:11px sans-serif;padding:2px 8px;border-radius:10px;margin:4px 4px 0 0;background:var(--arena)}
+.tag.v{background:var(--oliva);color:#fff}.tag.p{background:var(--tomate);color:#fff}.tag.n{background:var(--azul);color:#fff}
+.foto{width:100%;border-radius:12px;margin-top:8px;display:block}
+.info{background:var(--arena);border-radius:16px;padding:20px;margin:34px 0;font:15px sans-serif}
+.info h2{font:400 24px Georgia;color:var(--azul);margin-bottom:10px}
+@media(prefers-color-scheme:dark){.info h2{color:var(--tinta)}}
+.info p{margin:6px 0}.info a{color:var(--tomate)}
+.aler{font:12px sans-serif;opacity:.75;margin:16px 0}
+footer{text-align:center;font:12px sans-serif;opacity:.9;padding:20px}
+.barra{position:fixed;bottom:0;left:0;right:0;background:var(--azul);display:flex;justify-content:space-around;padding:10px;z-index:9}
+.barra a{color:#fff;font:600 13px sans-serif;text-decoration:none}
+.barra a.rojo{background:var(--tomate);padding:6px 18px;border-radius:20px}
+#top{position:fixed;right:14px;bottom:20px;width:40px;height:40px;border-radius:50%;border:0;background:var(--azul2);color:#fff;font-size:18px;display:none;z-index:9}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:20}
+#modal .c{background:var(--hueso);width:100%;max-width:720px;margin:0 auto;border-radius:20px 20px 0 0;padding:24px;max-height:85vh;overflow:auto}
+#modal h3{font-size:24px;color:var(--azul)}
+@media(prefers-color-scheme:dark){#modal h3{color:var(--tinta)}}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header class="portada" id="inicio">
+  <div class="langs" id="langs"></div>
+  <svg class="faro" viewBox="0 0 48 48"><path d="M19 42h10l-2-22h-6zM21 20l1-6h4l1 6M20 14h8l-2-4h-4zM24 6v4M12 12l6 3M36 12l-6 3M8 42h32"/></svg>
+  <h1 id="nom"></h1>
+  <div class="sub" id="sub"></div>
+  <div class="lema" id="lema"></div>
+  <div class="frase" id="frase"></div>
+  <div class="cta">
+    <a class="btn rojo" href="#carta" id="b-ver"></a>
+  </div>
+</header>
+<div class="tri"></div>
+<nav class="cats" id="nav"></nav>
+<main>
+  <div class="filtros" id="filtros"></div>
+  <div class="dest" id="dest"></div>
+  <div id="carta"></div>
+  
+  <p class="aler" id="aler"></p>
+</main>
+<div class="tri"></div>
+<footer id="pie"></footer>
+<button id="top" aria-label="Top">↑</button>
+<div id="modal"><div class="c" id="mc"></div></div>
+<script>
+const CARTA = {"restaurante": {"nombre": "Tocateja", "subtitulo": "Bar de tapas", "ciudad": "Granada", "cocina": "Spanish", "direccion": {"calle": "C/ Trinidad, 8", "ciudad": "Granada", "pais": "ES"}, "telefono": "659 77 67 25"}, "estilo": {"colores": {"azul": "#5b3a1a", "azul2": "#5b3a1a", "tomate": "#b8321f"}, "franja": ["#5b3a1a", "#ffffff", "#b8321f"]}, "textos": {"lema": {"es": "Tapas y raciones de siempre", "en": "Classic tapas and raciones", "de": "Tapas und Raciones wie immer"}, "frase": {"es": "Demostración · platos y precios de ejemplo, no son los de este local", "en": "Demo · sample dishes and prices, not this venue's", "de": "Demo · Beispielgerichte und -preise, nicht die dieses Lokals"}, "singluten": {"es": "", "en": "", "de": ""}}, "variante": "lista", "url": "https://tucartaweb.online/d/tocateja-da04/", "goatcounter": "", "categorias": [{"id": "tapas", "nombre": "Tapas", "sub": {"es": "Para picar", "en": "Tapas", "de": "Tapas"}, "platos": [{"nombre": "Croquetas de jamón", "precio": 2.5, "alergenos": ["gluten", "milk", "egg"], "slug": "croquetas-de-jamon", "foto": null}, {"nombre": "Tortilla de patatas", "precio": 2.5, "alergenos": ["egg"], "slug": "tortilla-de-patatas", "foto": null}, {"nombre": "Albóndigas en salsa", "precio": 3.0, "alergenos": ["gluten", "egg"], "slug": "albondigas-en-salsa", "foto": null}, {"nombre": "Ensaladilla rusa", "precio": 2.5, "alergenos": ["egg", "fish"], "slug": "ensaladilla-rusa", "foto": null}, {"nombre": "Pincho moruno", "precio": 3.0, "alergenos": [], "slug": "pincho-moruno", "foto": null}]}, {"id": "raciones", "nombre": "Raciones", "sub": {"es": "Para compartir", "en": "Raciones", "de": "Raciones"}, "platos": [{"nombre": "Jamón ibérico", "precio": 16.0, "alergenos": [], "slug": "jamon-iberico", "foto": null}, {"nombre": "Queso curado", "precio": 9.0, "alergenos": ["milk"], "slug": "queso-curado", "foto": null}, {"nombre": "Pulpo a la gallega", "precio": 16.0, "alergenos": ["molluscs"], "slug": "pulpo-a-la-gallega", "foto": null}, {"nombre": "Calamares fritos", "precio": 10.0, "alergenos": ["gluten", "molluscs"], "slug": "calamares-fritos", "foto": null}, {"nombre": "Berenjenas con miel", "precio": 7.5, "alergenos": ["gluten"], "vegetariano": true, "slug": "berenjenas-con-miel", "foto": null}, {"nombre": "Huevos rotos con jamón", "precio": 9.5, "alergenos": ["egg"], "slug": "huevos-rotos-con-jamon", "foto": null}]}, {"id": "platos", "nombre": "Platos", "sub": {"es": "Para comer", "en": "Main dishes", "de": "Hauptgerichte"}, "platos": [{"nombre": "Flamenquín", "precio": 9.5, "alergenos": ["gluten", "egg", "milk"], "slug": "flamenquin", "foto": null}, {"nombre": "Carrillada al vino tinto", "precio": 12.0, "alergenos": ["sulphites", "celery"], "slug": "carrillada-al-vino-tinto", "foto": null}, {"nombre": "Ensalada mixta", "precio": 7.0, "alergenos": [], "vegetariano": true, "slug": "ensalada-mixta", "foto": null}]}, {"id": "postres", "nombre": "Postres", "sub": {"es": "Dulces", "en": "Desserts", "de": "Desserts"}, "platos": [{"nombre": "Tarta de queso", "precio": 4.0, "alergenos": ["gluten", "milk", "egg"], "slug": "tarta-de-queso", "foto": null}, {"nombre": "Flan casero", "precio": 3.5, "alergenos": ["milk", "egg"], "slug": "flan-casero", "foto": null}]}, {"id": "bebidas", "nombre": "Bebidas", "sub": {"es": "Para acompañar", "en": "Drinks", "de": "Getränke"}, "platos": [{"nombre": "Agua mineral", "precio": 2.0, "alergenos": [], "slug": "agua-mineral", "foto": null}, {"nombre": "Refresco", "precio": 2.5, "alergenos": [], "slug": "refresco", "foto": null}, {"nombre": "Caña de cerveza", "precio": 2.2, "alergenos": ["gluten"], "slug": "cana-de-cerveza", "foto": null}, {"nombre": "Copa de vino de la casa", "precio": 3.0, "alergenos": ["sulphites"], "slug": "copa-de-vino-de-la-casa", "foto": null}, {"nombre": "Café", "precio": 1.6, "alergenos": ["milk"], "slug": "cafe", "foto": null}]}], "destacados": [], "indexar": false, "portada": "no", "api": "https://menusweb-api.antonio-valenzuela-valdes.workers.dev", "sitio": "https://tucartaweb.online/"};
+const T={
+ es:{ver:"Ver carta",res:"Reservar",map:"Cómo llegar",dest:"Especialidades de la casa",vacio:"Estamos preparando la carta. ¡Vuelve en unos minutos!",pref:"Todos",veg:"Vegetariano",pic:"Picante",
+  nuevo:"Nuova",pend:"[Precio]",aler:"Alérgenos: consulta siempre al personal antes de pedir. Los datos de cada plato pueden no estar verificados.",
+  cred:"Carta digital por TuCartaWeb",stat:"Estadísticas anónimas, sin cookies.",ub:"Dove siamo",hor:"Horario",cont:"Contacto",cerrar:"Cerrar",plato_sin:"Carta en revisión: faltan precios por confirmar.",
+  al:{milk:"Lácteos",gluten:"Gluten",egg:"Huevo",fish:"Pescado",shellfish:"Crustáceos",molluscs:"Moluscos",nuts:"Frutos secos",peanuts:"Cacahuetes",soy:"Soja",celery:"Apio",mustard:"Mostaza",sesame:"Sésamo",sulphites:"Sulfitos",lupin:"Altramuces"}},
+ en:{ver:"View menu",res:"Book a table",map:"Directions",dest:"House specialties",vacio:"We are preparing the menu. Please check back soon!",pref:"All",veg:"Vegetarian",pic:"Spicy",
+  nuevo:"New",pend:"[Price]",aler:"Allergens: always ask our staff before ordering. Dish information may not be fully verified.",
+  cred:"Digital menu by TuCartaWeb",stat:"Anonymous statistics, no cookies.",ub:"Find us",hor:"Opening hours",cont:"Contact",cerrar:"Close",al:{milk:"Dairy",gluten:"Gluten",egg:"Egg",fish:"Fish",shellfish:"Crustaceans",molluscs:"Molluscs",nuts:"Tree nuts",peanuts:"Peanuts",soy:"Soy",celery:"Celery",mustard:"Mustard",sesame:"Sesame",sulphites:"Sulphites",lupin:"Lupin"}},
+ de:{ver:"Speisekarte",res:"Reservieren",map:"Anfahrt",dest:"Spezialitäten des Hauses",vacio:"Wir bereiten die Speisekarte vor. Bitte schauen Sie bald wieder vorbei!",pref:"Alle",veg:"Vegetarisch",pic:"Scharf",
+  nuevo:"Neu",pend:"[Preis]",aler:"Allergene: Bitte fragen Sie vor der Bestellung unser Personal. Die Angaben sind möglicherweise nicht vollständig geprüft.",
+  cred:"Digitale Speisekarte von TuCartaWeb",stat:"Anonyme Statistik, keine Cookies.",ub:"So finden Sie uns",hor:"Öffnungszeiten",cont:"Kontakt",cerrar:"Schließen",al:{milk:"Milch",gluten:"Gluten",egg:"Ei",fish:"Fisch",shellfish:"Krebstiere",molluscs:"Weichtiere",nuts:"Schalenfrüchte",peanuts:"Erdnüsse",soy:"Soja",celery:"Sellerie",mustard:"Senf",sesame:"Sesam",sulphites:"Sulfite",lupin:"Lupinen"}}
+};
+let VARIANTE="fotos"; const DIN=false, GC="", FOTOS="../fotos/", API="https://menusweb-api.antonio-valenzuela-valdes.workers.dev", RID="tocateja";
+const fm=f=>/^(https?:|data:)/.test(f)?f:FOTOS+"min/"+f;
+function ev(n){try{if(DIN&&window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:n,title:n,event:true})}catch(x){}}
+const fu=f=>/^(https?:|data:)/.test(f)?f:FOTOS+f;
+let C=null;
+const R=CARTA.restaurante;
+let L=(navigator.language||"es").slice(0,2);if(!T[L])L="en";
+if(/^es/.test(navigator.language||""))L="es";
+let F=null;
+const $=id=>document.getElementById(id);
+const eur=n=>n.toFixed(2).replace(".",",")+" €";
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function tags(p){let h="";
+ if(p.nuevo)h+=`<span class="tag n">${T[L].nuevo}</span>`;
+ if(p.vegetariano)h+=`<span class="tag v">${T[L].veg}</span>`;
+ if(p.picante)h+=`<span class="tag p">${T[L].pic}</span>`;
+ (p.alergenos||[]).forEach(a=>h+=`<span class="tag">${T[L].al[a]||a}</span>`);return h}
+function plato(p,i,j){
+ const d=p.desc?`<div class="d">${esc(p.desc[L]||p.desc.es)}</div>`:"";
+ const pr=p.precio==null?`<span class="pr" style="color:#7a4a3a">${T[L].pend}</span>`:`<span class="pr">${eur(p.precio)}</span>`;
+ const txt=`<div class="l1"><span class="n">${esc(p.nombre)}</span><span class="pt"></span>${pr}</div>${d}<div>${tags(p)}</div>`;
+ const im=p.foto?`<img loading="lazy" decoding="async" src="${VARIANTE==="revista"?fu(p.foto):fm(p.foto)}" alt="${esc(p.nombre)}">`:`<div class="sinfoto"></div>`;
+ if(VARIANTE==="rejilla"){const pr2=p.precio==null?`<span style="color:#7a4a3a">${T[L].pend}</span>`:eur(p.precio);return `<div class="plato card" data-i="${i}" data-j="${j}">${im}<div class="ct"><div class="n">${esc(p.nombre)}</div><div class="pr">${pr2}</div><div>${tags(p)}</div></div></div>`}
+ if(VARIANTE==="revista")return `<div class="plato rev" data-i="${i}" data-j="${j}">${im}<div class="ct">${txt}</div></div>`;
+ if(VARIANTE==="fotos"||VARIANTE==="pestanas")return `<div class="plato con-foto" data-i="${i}" data-j="${j}"><div class="tx">${txt}</div>${p.foto?`<img class="thumb" loading="lazy" decoding="async" src="${fm(p.foto)}" alt="${esc(p.nombre)}">`:`<div class="thumb vacio"></div>`}</div>`;
+ return `<div class="plato" data-i="${i}" data-j="${j}">${txt}</div>`}
+function pinta(){
+ document.documentElement.lang=L;const t=T[L];
+ $("langs").innerHTML=["es","en","de"].map(l=>`<button class="${l==L?"on":""}" data-l="${l}">${l.toUpperCase()}</button>`).join("");
+ $("nom").textContent=R.nombre;$("sub").textContent=R.subtitulo||"";$("pie").innerHTML=esc(R.nombre+(R.subtitulo?" · "+R.subtitulo:""))+(GC?`<br><small style="font-size:12px">${t.stat}</small>`:"")+(CARTA.credito!==false&&CARTA.sitio?`<br><a href="${CARTA.sitio}" target="_blank" rel="noopener" style="color:inherit">${t.cred}</a>`:"");document.title=R.nombre+(R.subtitulo?" · "+R.subtitulo:"");
+ $("sub").style.display=R.subtitulo?"":"none";$("lema").textContent=(CARTA.textos.lema||{})[L]||"";$("frase").textContent=(CARTA.textos.frase||{})[L]||"";
+ $("b-ver").textContent=t.ver;
+ $("filtros").innerHTML=[[null,t.pref],["vegetariano",t.veg],["picante",t.pic]].map(([k,n])=>`<button class="${F==k?"on":""}" data-f="${k}">${n}</button>`).join("");
+ if(VARIANTE==="pestanas"){const vis=CARTA.categorias.filter(c=>c.platos.some(p=>!p.oculto));if(!C||!vis.some(c=>c.id===C))C=vis[0]&&vis[0].id;
+ $("nav").innerHTML=vis.map(c=>`<a href="#" data-c="${c.id}" class="${c.id===C?"on":""}">${esc(c.nombre)}</a>`).join("")}
+ else $("nav").innerHTML=CARTA.categorias.map(c=>`<a href="#${c.id}">${esc(c.nombre)}</a>`).join("");
+ const dd=[];CARTA.categorias.forEach((c,i)=>c.platos.forEach((p,j)=>{if(!p.oculto&&CARTA.destacados.includes(p.nombre))dd.push([p,i,j])}));
+ $("dest").innerHTML=`<h2>${(CARTA.textos.destacados||{})[L]||t.dest}</h2>`+dd.map(([p,i,j])=>`<div class="it" data-i="${i}" data-j="${j}"><span>${esc(p.nombre)}</span><b>${p.precio==null?"":eur(p.precio)}</b></div>`).join("");
+ $("carta").innerHTML=CARTA.categorias.map((c,i)=>{
+  if(VARIANTE==="pestanas"&&c.id!==C)return"";
+  const ps=c.platos.map((p,j)=>[p,j]).filter(([p])=>!p.oculto&&(!F||p[F]));
+  if(!ps.length)return"";
+  return `<section class="sec" id="${c.id}"><h2>${esc(c.nombre)}</h2><div class="es">${c.sub[L]}</div>${c.nota?`<div class="nota">${CARTA.textos[c.nota][L]}</div>`:""}${VARIANTE==="rejilla"?`<div class="grid">${ps.map(([p,j])=>plato(p,i,j)).join("")}</div>`:ps.map(([p,j])=>plato(p,i,j)).join("")}</section>`}).join("");
+ if(!$("carta").innerHTML.trim())$("carta").innerHTML=`<p style="text-align:center;padding:40px 10px;opacity:.8">${t.vacio}</p>`;
+ $("dest").style.display=dd.length?"":"none";
+ $("aler").textContent=t.aler;
+}
+document.addEventListener("click",e=>{
+ const cc=e.target.closest("[data-c]");if(cc){e.preventDefault();C=cc.dataset.c;pinta();scrollTo({top:document.querySelector("nav.cats").offsetTop,behavior:"smooth"});return}
+ const l=e.target.closest("[data-l]");if(l){L=l.dataset.l;ev("idioma/"+L);pinta();return}
+ const f=e.target.closest("[data-f]");if(f){F=f.dataset.f==="null"?null:f.dataset.f;pinta();return}
+ const p=e.target.closest("[data-i]");if(p){
+  const c=CARTA.categorias[p.dataset.i],d=c.platos[p.dataset.j];ev("plato/"+d.nombre);
+  $("mc").innerHTML=`<h3>${esc(d.nombre)}</h3><div class="es" style="font-style:italic;opacity:.7">${esc(c.nombre)} · ${c.sub[L]}</div>${d.foto?`<img class="foto" src="${fu(d.foto)}" alt="${esc(d.nombre)}">`:""}${d.desc?`<p>${esc(d.desc[L]||d.desc.es)}</p>`:""}<p style="font:700 20px sans-serif;color:var(--tomate)">${d.precio==null?T[L].pend:eur(d.precio)}</p><div>${tags(d)}</div><p class="aler">${T[L].aler}</p><a class="btn rojo" href="#" id="cerrar">${T[L].cerrar}</a>`;
+  $("modal").style.display="flex";return}
+ if(e.target.id==="modal"||e.target.id==="cerrar"){e.preventDefault();$("modal").style.display="none"}
+});
+$("top").onclick=()=>scrollTo({top:0});
+addEventListener("scroll",()=>$("top").style.display=scrollY>600?"block":"none");
+pinta();
+(async()=>{if(!API)return;try{const r=await fetch(API+"/carta/"+RID);if(!r.ok)return;const d=await r.json();
+ if(Array.isArray(d.categorias)){CARTA.categorias=d.categorias;if(Array.isArray(d.destacados)&&d.destacados.length)CARTA.destacados=d.destacados;
+ const a=d.ajustes||{};if(a.nombre)R.nombre=a.nombre;if(typeof a.subtitulo==="string")R.subtitulo=a.subtitulo;
+ if(DIN&&["lista","fotos","rejilla","pestanas","revista"].includes(a.variante))VARIANTE=a.variante;pinta()}}catch(e){}})();
+</script>
+</body>
+</html>
