@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de la carta · Bubble Max</title>
+<style>
+:root{--azul:#0f2a47;--azul2:#1c4670;--arena:#f3ead9;--hueso:#fbf7ef;--tomate:#c8412b;--oliva:#5f6f2f;--tinta:#1d2733;--linea:#d9ccb2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--hueso);color:var(--tinta);font:18px/1.4 system-ui,Segoe UI,Roboto,sans-serif}
+#app{max-width:560px;margin:0 auto;padding:20px 18px 90px}
+h1{font:400 28px Georgia,serif;color:var(--azul);margin:0}
+h2{font:400 22px Georgia,serif;margin:22px 0 10px}
+.marca{text-align:center;letter-spacing:.3em;font:400 30px Georgia,serif;color:var(--azul);padding:34px 0 6px}
+.cab{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.atras{border:0;background:var(--arena);width:46px;height:46px;border-radius:50%;font-size:22px;cursor:pointer;flex:none}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:18px;font:600 19px system-ui,sans-serif;cursor:pointer;margin:10px 0;background:var(--azul);color:#fff;text-align:center;text-decoration:none}
+.btn.rojo{background:var(--tomate)}.btn.claro{background:var(--arena);color:var(--tinta)}.btn.peligro{background:#fff;color:#a02020;border:2px solid #e3b5b5}
+.btn:disabled{opacity:.45}
+.btn small{display:block;font:400 14px system-ui;opacity:.85;margin-top:2px}
+input[type=text],input[type=password],input[type=number],textarea,input:not([type]){width:100%;font:22px system-ui,sans-serif;padding:16px;border:2px solid var(--linea);border-radius:14px;background:#fff;color:var(--tinta)}
+textarea{font-size:18px;min-height:90px}
+label{display:block;font-weight:600;margin:16px 0 6px}
+.pregunta{font:400 26px/1.25 Georgia,serif;margin:10px 0 18px}
+.progreso{height:8px;background:var(--arena);border-radius:6px;margin:0 0 20px;overflow:hidden}.progreso i{display:block;height:100%;background:var(--tomate)}
+.cat.sel{border-color:var(--tomate);background:#fff4ef}
+.ver{display:inline-block;margin:-2px 0 8px 6px;font-size:15px;color:var(--azul2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--linea);background:#fff;border-radius:24px;padding:10px 16px;font:17px system-ui;cursor:pointer;color:var(--tinta)}
+.chip.on{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.cat{display:block;width:100%;text-align:left;border:2px solid var(--linea);background:#fff;border-radius:14px;padding:16px;margin:8px 0;font:20px system-ui;cursor:pointer;color:var(--tinta)}
+.cat small{opacity:.65;font-size:15px}
+.aviso{background:#fff3cd;border-radius:14px;padding:14px 16px;margin:14px 0}
+.ok{background:#e4efd4;border-radius:14px;padding:14px 16px;margin:14px 0}
+.error{color:#a02020;font-weight:600;min-height:24px;margin:8px 0}
+.fila{display:flex;gap:12px;align-items:center;width:100%;border:0;background:#fff;border-bottom:1px solid var(--linea);padding:10px 4px;text-align:left;font:18px system-ui;cursor:pointer;color:var(--tinta)}
+.fila .t{flex:1;min-width:0}.fila b{font-weight:600}.fila .s{font-size:14px;color:#a0522d}
+.fila img,.fila .nf{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none;background:var(--arena)}
+.fila .nf{display:flex;align-items:center;justify-content:center;font-size:22px}
+.fila.oculto{opacity:.5}
+.fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.fotos img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;cursor:pointer;border:3px solid transparent}
+.fotos img.on{border-color:var(--tomate)}
+.vista{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;margin:6px 0}
+details{margin:18px 0;background:var(--arena);border-radius:14px;padding:12px 16px}summary{font-weight:600;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:12px 22px;border-radius:30px;font:600 16px system-ui;display:none;z-index:50;max-width:92%;text-align:center}
+#toast.mal{background:#a02020}
+#vel{position:fixed;inset:0;background:#fffc;display:none;align-items:center;justify-content:center;font:600 22px system-ui;z-index:40}
+.grande{font-size:64px;text-align:center;margin:20px 0 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<div id="vel">Subiendo foto…</div>
+<input type="file" id="f-cam" accept="image/*" capture="environment" hidden>
+<input type="file" id="f-gal" accept="image/*" hidden>
+<script>
+const CARTA = {"restaurante": {"nombre": "Bubble Max", "subtitulo": "Taiwan Bubble Tea & More", "ciudad": "Granada", "cocina": "Bubble tea", "telefono": "635 35 84 15"}, "estilo": {"colores": {"azul": "#1a1a1a", "azul2": "#1a1a1a", "tomate": "#f2c200"}, "franja": []}, "textos": {"lema": {"es": "Taiwan Bubble Tea & More", "en": "Taiwan Bubble Tea & More", "zh": "來自台灣的珍珠奶茶"}, "frase": {"es": "Precios: tamaño normal / grande. Tapioca, boba, gelatina o aloe vera (de temporada) +0,7 €. Té negro especial o té verde con jazmín. Leche normal, sin lactosa o de soja. Con una bebida, un taiyaki por +1 €.", "en": "Prices: regular / large. Tapioca, popping ball, jelly or aloe (seasonal) +€0.70. Choose special black tea or jasmine green tea. Regular, lactose-free or soy milk. With any drink, a taiyaki for +€1.", "zh": "價格：小杯／大杯。加珍珠／椰果／爆爆珠／蘆薈（季節限定）另加 0,7 €。基底茶可選茉莉綠茶／特調紅茶。鮮奶可換無乳糖牛奶或豆漿。點飲品加 1 € 即可享鯛魚燒。"}, "singluten": {"es": "", "en": "", "zh": ""}}, "variante": "fotos", "url": "https://tucartaweb.online/d/bubble-max-2ce8/", "goatcounter": "tucartaweb", "categorias": [{"id": "leche", "nombre": "Bebida con leche", "sub": {"es": "Con tapioca y más", "en": "With tapioca and more", "zh": "珍珠與更多"}, "platos": [{"nombre": "Clásico de Taiwán (con tapioca)", "precio": 4.0, "alergenos": [], "desc": {"es": "Normal 4,00 € · Grande 4,40 €", "en": "Regular €4.00 · Large €4.40", "zh": "小杯 4,00 € · 大杯 4,40 €"}, "temp": "ambos", "nom": {"en": "Classic bubble tea (with tapioca)", "zh": "珍珠鮮奶茶"}, "foto": "leche.jpg", "slug": "clasico-de-taiwan-con-tapioca"}, {"nombre": "Bubble moreno (con tapioca)", "precio": 4.2, "alergenos": [], "desc": {"es": "Normal 4,20 € · Grande 4,60 €", "en": "Regular €4.20 · Large €4.60", "zh": "小杯 4,20 € · 大杯 4,60 €"}, "temp": "ambos", "nom": {"en": "Brown sugar milk tea (with tapioca)", "zh": "黑糖珍珠鮮奶茶"}, "foto": "leche.jpg", "slug": "bubble-moreno-con-tapioca"}, {"nombre": "Coco latte", "precio": 3.8, "alergenos": [], "desc": {"es": "Normal 3,80 € · Grande 4,20 €", "en": "Regular €3.80 · Large €4.20", "zh": "小杯 3,80 € · 大杯 4,20 €"}, "temp": "ambos", "nom": {"en": "Coco latte", "zh": "椰香奶茶"}, "foto": "leche.jpg", "slug": "coco-latte"}, {"nombre": "Matcha latte", "precio": 3.8, "alergenos": [], "desc": {"es": "Normal 3,80 € · Grande 4,20 €", "en": "Regular €3.80 · Large €4.20", "zh": "小杯 3,80 € · 大杯 4,20 €"}, "temp": "ambos", "nom": {"en": "Matcha latte", "zh": "抹茶拿鐵"}, "foto": "leche.jpg", "slug": "matcha-latte"}, {"nombre": "Taro latte", "precio": 4.0, "alergenos": [], "desc": {"es": "Normal 4,00 € · Grande 4,40 €", "en": "Regular €4.00 · Large €4.40", "zh": "小杯 4,00 € · 大杯 4,40 €"}, "temp": "ambos", "nom": {"en": "Taro latte", "zh": "芋泥鮮奶茶"}, "foto": "leche.jpg", "slug": "taro-latte"}, {"nombre": "Bubble café latte (con tapioca)", "precio": 4.0, "alergenos": [], "desc": {"es": "Normal 4,00 € · Grande 4,90 €", "en": "Regular €4.00 · Large €4.90", "zh": "小杯 4,00 € · 大杯 4,90 €"}, "temp": "ambos", "nom": {"en": "Bubble coffee latte (with tapioca)", "zh": "珍珠咖啡拿鐵"}, "foto": "leche.jpg", "slug": "bubble-cafe-latte-con-tapioca"}, {"nombre": "Choco té (con tapioca)", "precio": 4.2, "alergenos": [], "desc": {"es": "Normal 4,20 € · Grande 4,60 €", "en": "Regular €4.20 · Large €4.60", "zh": "小杯 4,20 € · 大杯 4,60 €"}, "temp": "ambos", "nom": {"en": "Choco tea (with tapioca)", "zh": "珍珠可可鮮奶茶"}, "foto": "leche.jpg", "slug": "choco-te-con-tapioca"}, {"nombre": "Café Illy con coco", "precio": 3.8, "alergenos": [], "desc": {"es": "Normal 3,80 € · Grande 4,70 €", "en": "Regular €3.80 · Large €4.70", "zh": "小杯 3,80 € · 大杯 4,70 €"}, "temp": "ambos", "nom": {"en": "Coffee Illy with coco", "zh": "椰香咖啡拿鐵"}, "foto": "leche.jpg", "slug": "cafe-illy-con-coco"}, {"nombre": "Té con leche", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "ambos", "nom": {"en": "Milk tea", "zh": "鮮奶茶"}, "foto": "leche.jpg", "slug": "te-con-leche"}, {"nombre": "Té con leche afrutado", "precio": 3.5, "alergenos": [], "desc": {"es": "Normal 3,50 € · Grande 3,90 €", "en": "Regular €3.50 · Large €3.90", "zh": "小杯 3,50 € · 大杯 3,90 €"}, "temp": "frio", "nom": {"en": "Fruit milk tea", "zh": "玫瑰口味鮮奶茶"}, "foto": "leche.jpg", "slug": "te-con-leche-afrutado"}], "nom": {"en": "Drink with milk", "zh": "鮮奶飲品系列"}}, {"id": "fruta", "nombre": "Té de fruta", "sub": {"es": "Té frío con fruta", "en": "Cold fruit tea", "zh": "冰涼水果茶"}, "platos": [{"nombre": "Lichi o fresa", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Litchi or strawberry", "zh": "荔枝／草莓"}, "foto": "fruta.jpg", "slug": "lichi-o-fresa"}, {"nombre": "Mango o piña", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Mango or pineapple", "zh": "芒果／鳳梨"}, "foto": "fruta.jpg", "slug": "mango-o-pina"}, {"nombre": "Maracuyá", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Passionfruit", "zh": "百香果"}, "foto": "fruta.jpg", "slug": "maracuya"}, {"nombre": "Uva negra", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Grape", "zh": "葡萄"}, "foto": "fruta.jpg", "slug": "uva-negra"}, {"nombre": "Melocotón", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Peach", "zh": "水蜜桃"}, "foto": "fruta.jpg", "slug": "melocoton"}, {"nombre": "Melón verde", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Green melon", "zh": "哈密瓜"}, "foto": "fruta.jpg", "slug": "melon-verde"}, {"nombre": "Limonada (de temporada)", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Lemonade (seasonal)", "zh": "檸檬水(季節限定)"}, "foto": "fruta.jpg", "slug": "limonada-de-temporada"}, {"nombre": "Limón con miel (de temporada)", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Lemon with honey (seasonal)", "zh": "蜂蜜檸檬(季節限定)"}, "foto": "fruta.jpg", "slug": "limon-con-miel-de-temporada"}, {"nombre": "Sabor mixto a tu gusto", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Customised flavour", "zh": "自選混合口味"}, "foto": "fruta.jpg", "slug": "sabor-mixto-a-tu-gusto"}], "nom": {"en": "Fruit tea", "zh": "水果風味茶系列"}}, {"id": "granizado", "nombre": "Granizado", "sub": {"es": "Fríos", "en": "Cold", "zh": "冰涼"}, "platos": [{"nombre": "Lichi o fresa", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Litchi or strawberry", "zh": "荔枝／草莓"}, "foto": "granizado.jpg", "slug": "lichi-o-fresa"}, {"nombre": "Mango o maracuyá", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Mango or passionfruit", "zh": "芒果／百香果"}, "foto": "granizado.jpg", "slug": "mango-o-maracuya"}, {"nombre": "Piña o uva negra", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Pineapple or grape", "zh": "鳳梨／葡萄"}, "foto": "granizado.jpg", "slug": "pina-o-uva-negra"}, {"nombre": "Melocotón o melón verde", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Green melon or peach", "zh": "哈密瓜／水蜜桃"}, "foto": "granizado.jpg", "slug": "melocoton-o-melon-verde"}, {"nombre": "Limón natural (de temporada)", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Lemon (seasonal)", "zh": "檸檬(季節限定)"}, "foto": "granizado.jpg", "slug": "limon-natural-de-temporada"}, {"nombre": "Sabor mixto a tu gusto", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Customised flavour", "zh": "自選混合口味"}, "foto": "granizado.jpg", "slug": "sabor-mixto-a-tu-gusto"}, {"nombre": "Café Illy con cacao", "precio": 3.8, "alergenos": [], "desc": {"es": "Normal 3,80 € · Grande 4,70 €", "en": "Regular €3.80 · Large €4.70", "zh": "小杯 3,80 € · 大杯 4,70 €"}, "temp": "frio", "nom": {"en": "Coffee Illy with cacao", "zh": "摩卡咖啡"}, "foto": "granizado.jpg", "slug": "cafe-illy-con-cacao"}, {"nombre": "Piña colada", "precio": 3.8, "alergenos": [], "desc": {"es": "Normal 3,80 € · Grande 4,20 €", "en": "Regular €3.80 · Large €4.20", "zh": "小杯 3,80 € · 大杯 4,20 €"}, "temp": "frio", "nom": {"en": "Piña colada", "zh": "PIÑA COLADA"}, "foto": "granizado.jpg", "slug": "pina-colada"}], "nom": {"en": "Slush", "zh": "冰沙系列"}}, {"id": "batido", "nombre": "Batido", "sub": {"es": "Batidos", "en": "Cold", "zh": "冰涼"}, "platos": [{"nombre": "Cacao", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Cacao", "zh": "巧克力"}, "foto": "batido.jpg", "slug": "cacao"}, {"nombre": "Fresa", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Strawberry", "zh": "草莓"}, "foto": "batido.jpg", "slug": "fresa"}, {"nombre": "Plátano", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Banana", "zh": "香蕉"}, "foto": "batido.jpg", "slug": "platano"}, {"nombre": "Mango", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Mango", "zh": "芒果"}, "foto": "batido.jpg", "slug": "mango"}, {"nombre": "Maracuyá", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Passionfruit", "zh": "百香果"}, "foto": "batido.jpg", "slug": "maracuya"}, {"nombre": "Melocotón", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Peach", "zh": "水蜜桃"}, "foto": "batido.jpg", "slug": "melocoton"}, {"nombre": "Melón verde", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Green melon", "zh": "哈密瓜"}, "foto": "batido.jpg", "slug": "melon-verde"}, {"nombre": "Sabor mixto a tu gusto", "precio": 3.3, "alergenos": [], "desc": {"es": "Normal 3,30 € · Grande 3,70 €", "en": "Regular €3.30 · Large €3.70", "zh": "小杯 3,30 € · 大杯 3,70 €"}, "temp": "frio", "nom": {"en": "Customised flavour", "zh": "自選混合口味"}, "foto": "batido.jpg", "slug": "sabor-mixto-a-tu-gusto"}], "nom": {"en": "Milkshake", "zh": "奶昔系列"}}, {"id": "taiyaki", "nombre": "Taiyaki", "sub": {"es": "¡Ha vuelto! Crema pastelera o chocolate semiamargo", "en": "Back again! Custard cream or dark chocolate cream", "zh": "鯛魚燒回來了！卡士達醬或黑巧克力醬"}, "platos": [{"nombre": "1 unidad", "precio": 2.0, "alergenos": [], "nom": {"en": "1 unit", "zh": "1個"}, "foto": "taiyaki.jpg", "slug": "1-unidad"}, {"nombre": "2 unidades", "precio": 3.0, "alergenos": [], "nom": {"en": "2 units", "zh": "2個"}, "foto": "taiyaki.jpg", "slug": "2-unidades"}, {"nombre": "4 unidades", "precio": 5.0, "alergenos": [], "nom": {"en": "4 units", "zh": "4個"}, "foto": "taiyaki.jpg", "slug": "4-unidades"}, {"nombre": "6 unidades", "precio": 6.0, "alergenos": [], "nom": {"en": "6 units", "zh": "6個"}, "foto": "taiyaki.jpg", "slug": "6-unidades"}], "nom": {"en": "Taiyaki", "zh": "鯛魚燒"}}], "destacados": [], "indexar": false, "idiomas": ["es", "en", "zh"], "portada": "no", "api": "https://menusweb-api.antonio-valenzuela-valdes.workers.dev", "sitio": "https://tucartaweb.online/"};
+const FOTOS="../fotos/", API="https://menusweb-api.antonio-valenzuela-valdes.workers.dev", RID="bubble-max-carta", LIBRES=[], DISENOS=[["lista", "Versión 1 · Clásica", "Carta elegante solo con texto: nombre, descripción y precio. La foto se ve al tocar un plato."], ["fotos", "Versión 2 · Lista con fotos", "Cada plato muestra su foto en pequeño junto al precio."], ["rejilla", "Versión 3 · Rejilla", "Platos en tarjetas de dos columnas con la foto grande, como una app."], ["pestanas", "Versión 4 · Por pestañas", "Una categoría cada vez: el cliente toca Pizza, Pasta, Dolci... y ve solo esa."], ["revista", "Versión 5 · Revista", "Una foto grande a todo el ancho por cada plato. La más vistosa."]], CARPETAS=["v1", "v2", "v3", "v4", "v5"], VINI="fotos";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fu=f=>/^(https?:|data:)/.test(f)?f:FOTOS+f;
+const eur=n=>n.toFixed(2).replace(".",",")+" €";
+const ALER={milk:"Lácteos",gluten:"Gluten",egg:"Huevo",fish:"Pescado",shellfish:"Crustáceos",molluscs:"Moluscos",nuts:"Frutos secos",peanuts:"Cacahuetes",soy:"Soja",celery:"Apio",mustard:"Mostaza",sesame:"Sésamo",sulphites:"Sulfitos",lupin:"Altramuces"};
+let S={token:null,carta:null};
+const nombreRest=()=>(S.carta&&S.carta.ajustes&&S.carta.ajustes.nombre)||CARTA.restaurante.nombre;
+let W=null;           // estado del asistente actual
+try{S.token=sessionStorage.getItem("mw_token")}catch(e){}
+
+/* ---------- servidor ---------- */
+async function api(metodo,ruta,cuerpo,cabeceras){
+  if(!API)throw new Error("Esta página aún no está conectada a un servidor.");
+  const h=Object.assign({},cabeceras||{});if(S.token)h.Authorization="Bearer "+S.token;
+  const r=await fetch(API+ruta,{method:metodo,headers:h,body:cuerpo});
+  let d=null;try{d=await r.json()}catch(e){}
+  if(r.status===401&&ruta.indexOf("/login/")<0){S.token=null;try{sessionStorage.removeItem("mw_token")}catch(e){}login("Tu sesión ha caducado. Vuelve a entrar.");throw new Error("sesion")}
+  if(!r.ok)throw new Error((d&&d.error)||"Error "+r.status);
+  return d;
+}
+let cola=Promise.resolve();
+function toast(t,ms,mal,click){const e=$("toast");e.textContent=t;e.className=mal?"mal":"";e.style.display="block";e.onclick=click||null;clearTimeout(toast.t);if(ms)toast.t=setTimeout(()=>e.style.display="none",ms)}
+function guardar(){
+  toast("Guardando…");
+  cola=cola.then(()=>api("PUT","/admin/carta/"+RID,JSON.stringify({categorias:S.carta.categorias,destacados:S.carta.destacados||[],ajustes:S.carta.ajustes}),{"Content-Type":"application/json"}))
+    .then(()=>toast("Guardado ✓ Ya lo ven tus clientes",2200))
+    .catch(e=>{if(e.message!=="sesion")toast("No se pudo guardar. Toca aquí para reintentar",0,true,guardar)});
+  return cola;
+}
+async function subirFoto(file){
+  $("vel").style.display="flex";
+  try{
+    const bmp=await createImageBitmap(file,{imageOrientation:"from-image"});
+    const k=Math.min(1,900/Math.max(bmp.width,bmp.height)),c=document.createElement("canvas");
+    c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+    c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.82));
+    const d=await api("PUT","/admin/foto/"+RID,blob,{"Content-Type":"image/jpeg"});
+    return d.url;
+  }finally{$("vel").style.display="none"}
+}
+
+/* ---------- datos ---------- */
+const platos=()=>{const o=[];S.carta.categorias.forEach((c,i)=>c.platos.forEach((p,j)=>o.push({c,i,p,j})));return o};
+const usadas=()=>new Set(platos().map(x=>x.p.foto).filter(Boolean));
+const libres=()=>{const u=usadas();return LIBRES.filter(f=>!u.has(f))};
+function pendientes(){const t=[];platos().forEach(({p})=>{if(p.oculto)return;if(p.precio==null)t.push({p,t:"precio"});if(!p.foto)t.push({p,t:"foto"})});return t}
+function precioDe(txt){const n=Number(String(txt).replace(",",".").replace(/[^\d.]/g,""));return isFinite(n)&&n>0&&n<1000?Math.round(n*100)/100:null}
+const slug=t=>t.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const vista=h=>{$("app").innerHTML=h;scrollTo(0,0)};
+const cab=(t,a)=>`<div class="cab">${a?`<button class="atras" data-a="${a}" aria-label="Atrás">←</button>`:""}<h1>${t}</h1></div>`;
+
+/* ---------- pantallas ---------- */
+function login(msg){
+  vista(`<div class="marca">${esc(nombreRest())}</div><p style="text-align:center;opacity:.7;margin-top:0">Panel de la carta</p>
+  ${API?"":`<div class="aviso">Esta página aún no está conectada al servidor. Se activará cuando la carta se publique.</div>`}
+  <label for="clave">Tu clave</label><input type="password" id="clave" autocomplete="current-password" placeholder="Escribe tu clave">
+  <div class="error" id="err">${esc(msg||"")}</div><button class="btn rojo" data-a="entrar">Entrar</button>`);
+  $("clave").addEventListener("keydown",e=>{if(e.key==="Enter")ACC.entrar()});
+}
+async function cargar(){
+  try{S.carta=await api("GET","/carta/"+RID)}
+  catch(e){if(e.message==="sesion")return false;S.carta={categorias:JSON.parse(JSON.stringify(CARTA.categorias)),destacados:CARTA.destacados||[]}}
+  S.carta.ajustes=Object.assign({nombre:CARTA.restaurante.nombre,subtitulo:CARTA.restaurante.subtitulo||"",variante:VINI},S.carta.ajustes||{});
+  return true;
+}
+function home(){
+  const n=pendientes().length,total=platos().length;
+  vista(`<div class="marca" style="padding-top:12px">${esc(nombreRest())}</div><p style="text-align:center;opacity:.7;margin-top:0">¿Qué quieres hacer hoy?</p>
+  ${n?`<button class="btn rojo" data-a="pend">⚠️ Completar lo que falta<small>${n} cosas sin precio o sin foto</small></button>`:`<div class="ok">✓ Todos tus platos tienen precio y foto.</div>`}
+  <button class="btn" data-a="nuevo">➕ Añadir un plato nuevo<small>Te preguntamos paso a paso</small></button>
+  <button class="btn claro" data-a="lista">✏️ Ver y corregir mis platos<small>${total} platos en la carta</small></button>
+  <button class="btn claro" data-a="ajustes">⚙️ Datos del restaurante y diseño<small>Nombre y aspecto de la carta</small></button>
+  <a class="btn claro" href="../" target="_blank" rel="noopener">👁 Ver mi carta como la ven los clientes</a>
+  <button class="btn claro" data-a="salir" style="margin-top:30px;background:#fff;border:2px solid var(--linea)">Salir</button>`);
+}
+
+/* completar lo que falta */
+function pend(k){
+  const t=pendientes();W={tipo:"pend",k:k||0,total:(k?W.total:t.length)};
+  paso_pend();
+}
+function paso_pend(){
+  const t=pendientes();
+  if(!t.length||W.k>=W.total+1){return fin("¡Listo!","Ya no falta nada por completar.")}
+  const x=t[0]; W.actual=x;
+  const hecho=Math.min(W.total-t.length,W.total);
+  const barra=`<div class="progreso"><i style="width:${Math.round(100*hecho/W.total)}%"></i></div>`;
+  if(x.t==="precio"){
+    vista(cab("Completar","home")+barra+`<div class="pregunta">¿Cuánto cuesta <b>${esc(x.p.nombre)}</b>?</div>
+    <input type="text" inputmode="decimal" id="precio" placeholder="Por ejemplo 12,50" autofocus><div class="error" id="err"></div>
+    <button class="btn rojo" data-a="pend-precio">Guardar y seguir</button><button class="btn claro" data-a="pend-saltar">Saltar este</button>`);
+    $("precio").addEventListener("keydown",e=>{if(e.key==="Enter")ACC["pend-precio"]()});
+  }else{
+    vista(cab("Completar","home")+barra+`<div class="pregunta">Foto de <b>${esc(x.p.nombre)}</b></div>${selectorFoto()}
+    <button class="btn claro" data-a="pend-saltar">Saltar este</button>`);
+    W.cb=url=>{x.p.foto=url;guardar();paso_pend()};
+  }
+}
+function saltar(){ // marca como saltado temporalmente
+  const x=W.actual;W.saltados=(W.saltados||[]);W.saltados.push(x);
+  if(x.t==="precio")x.p._saltaP=true;else x.p._saltaF=true;
+  paso_pend_sig();
+}
+function paso_pend_sig(){
+  const t=pendientes().filter(x=>!(x.t==="precio"?x.p._saltaP:x.p._saltaF));
+  if(!t.length){platos().forEach(({p})=>{delete p._saltaP;delete p._saltaF});return fin("Hasta aquí","Lo que has saltado sigue pendiente. Puedes completarlo cuando quieras.")}
+  const x=t[0];W.actual=x;
+  const hecho=W.total-pendientes().length;
+  const barra=`<div class="progreso"><i style="width:${Math.round(100*hecho/W.total)}%"></i></div>`;
+  if(x.t==="precio"){
+    vista(cab("Completar","home")+barra+`<div class="pregunta">¿Cuánto cuesta <b>${esc(x.p.nombre)}</b>?</div>
+    <input type="text" inputmode="decimal" id="precio" placeholder="Por ejemplo 12,50"><div class="error" id="err"></div>
+    <button class="btn rojo" data-a="pend-precio">Guardar y seguir</button><button class="btn claro" data-a="pend-saltar">Saltar este</button>`);
+    $("precio").addEventListener("keydown",e=>{if(e.key==="Enter")ACC["pend-precio"]()});
+  }else{
+    vista(cab("Completar","home")+barra+`<div class="pregunta">Foto de <b>${esc(x.p.nombre)}</b></div>${selectorFoto()}
+    <button class="btn claro" data-a="pend-saltar">Saltar este</button>`);
+    W.cb=url=>{x.p.foto=url;guardar();paso_pend_sig()};
+  }
+}
+function fin(titulo,txt){
+  platos().forEach(({p})=>{delete p._saltaP;delete p._saltaF});
+  vista(`<div class="grande">✅</div><h1 style="text-align:center;margin-top:10px">${titulo}</h1><p style="text-align:center">${txt}</p>
+  <button class="btn rojo" data-a="home">Volver al inicio</button>`);
+}
+
+/* selector de foto (reutilizable) */
+function selectorFoto(actual){
+  const l=libres();
+  return `${actual?`<img class="vista" src="${esc(fu(actual))}" alt="">`:""}
+  <button class="btn" data-a="cam">📷 Hacer una foto</button>
+  <button class="btn claro" data-a="gal">🖼 Elegir de la galería</button>
+  ${l.length?`<h2>…o una de las fotos que ya tenemos</h2><div class="fotos">${l.map(f=>`<img src="${esc(fu(f))}" data-a="libre" data-f="${esc(f)}" alt="">`).join("")}</div>`:""}`;
+}
+
+/* datos del restaurante y diseño */
+function ajustes(){
+  const a=S.carta.ajustes;W={tipo:"ajustes",variante:a.variante};
+  vista(cab("Datos y diseño","home")+`<label for="nombre">Nombre del restaurante</label><input type="text" id="nombre" value="${esc(a.nombre)}">
+  <label for="sub">Subtítulo (opcional)</label><input type="text" id="sub" value="${esc(a.subtitulo)}" placeholder="Por ejemplo: Ristorante Pizzeria">
+  <h2>¿Qué diseño quieres para tu carta?</h2>
+  ${DISENOS.map(([m,t,d],i)=>`<button class="cat ${m===a.variante?"sel":""}" data-a="diseno" data-m="${m}"><b>${esc(t)}</b><br><small>${esc(d)}</small></button><a class="ver" href="../${CARPETAS[i]}/" target="_blank" rel="noopener">Ver cómo queda ↗</a>`).join("")}
+  <div class="error" id="err"></div><button class="btn rojo" data-a="aj-guardar">✓ Guardar</button>`);
+}
+
+/* añadir plato nuevo */
+function nuevo(){W={tipo:"nuevo",paso:1,p:{nombre:"",precio:null,foto:null,alergenos:[]},cat:null};paso_nuevo()}
+function paso_nuevo(){
+  const p=W.p,n=W.paso,barra=`<div class="progreso"><i style="width:${n*20}%"></i></div>`;
+  if(n===1){
+    vista(cab("Plato nuevo","home")+barra+`<div class="pregunta">¿Cómo se llama el plato?</div>
+    <input type="text" id="nombre" value="${esc(p.nombre)}" placeholder="Por ejemplo: Pizza Margherita"><div class="error" id="err"></div>
+    <button class="btn rojo" data-a="n-sig">Siguiente</button>`);
+    $("nombre").focus();$("nombre").addEventListener("keydown",e=>{if(e.key==="Enter")ACC["n-sig"]()});
+  }else if(n===2){
+    vista(cab("Plato nuevo","n-atras")+barra+`<div class="pregunta">¿En qué parte de la carta va <b>${esc(p.nombre)}</b>?</div>
+    ${S.carta.categorias.map((c,i)=>`<button class="cat" data-a="n-cat" data-i="${i}">${esc(c.nombre)} <small>${esc((c.sub&&c.sub.es)||"")}</small></button>`).join("")}
+    <button class="cat" data-a="n-cat-nueva" style="border-style:dashed">➕ Otra sección nueva (bebidas, vinos…)</button>`);
+  }else if(n===3){
+    vista(cab("Plato nuevo","n-atras")+barra+`<div class="pregunta">¿Cuánto cuesta?</div>
+    <input type="text" inputmode="decimal" id="precio" value="${p.precio==null?"":String(p.precio).replace(".",",")}" placeholder="Por ejemplo 12,50"><div class="error" id="err"></div>
+    <button class="btn rojo" data-a="n-sig">Siguiente</button><button class="btn claro" data-a="n-sinprecio">Aún no lo sé</button>`);
+    $("precio").focus();$("precio").addEventListener("keydown",e=>{if(e.key==="Enter")ACC["n-sig"]()});
+  }else if(n===4){
+    vista(cab("Plato nuevo","n-atras")+barra+`<div class="pregunta">¿Tiene foto?</div>${selectorFoto(p.foto)}
+    <button class="btn claro" data-a="n-sinfoto">${p.foto?"Siguiente":"Sin foto por ahora"}</button>`);
+    W.cb=url=>{p.foto=url;paso_nuevo()};
+  }else{
+    vista(cab("Revisa y añade","n-atras")+barra+`<div class="ok" style="background:#fff;border:2px solid var(--linea)">
+      ${p.foto?`<img class="vista" src="${esc(fu(p.foto))}" alt="">`:""}
+      <b style="font-size:22px">${esc(p.nombre)}</b><br>${esc(S.carta.categorias[W.cat].nombre)} · ${p.precio==null?"<span style='color:#a0522d'>sin precio</span>":eur(p.precio)}</div>
+    ${extras(p)}
+    <button class="btn rojo" data-a="n-fin">✓ Añadir a la carta</button>`);
+  }
+}
+function extras(p){
+  return `<details><summary>Más opciones (no hace falta)</summary>
+  <label for="desc">Descripción corta</label><textarea id="desc" placeholder="Ingredientes en una línea">${esc((p.desc&&p.desc.es)||"")}</textarea>
+  <div class="chips" style="margin-top:14px"><button class="chip ${p.vegetariano?"on":""}" data-a="tog" data-k="vegetariano">🌱 Vegetariano</button><button class="chip ${p.picante?"on":""}" data-a="tog" data-k="picante">🌶 Picante</button></div>
+  <label>Alérgenos</label><div class="chips">${Object.keys(ALER).map(k=>`<button class="chip ${(p.alergenos||[]).includes(k)?"on":""}" data-a="alerg" data-k="${k}">${ALER[k]}</button>`).join("")}</div></details>`;
+}
+function leerDesc(p){const d=$("desc");if(d){const v=d.value.trim();if(v)p.desc={es:v};else delete p.desc}}
+
+/* lista y edición */
+function lista(){
+  vista(cab("Mis platos","home")+S.carta.categorias.map((c,i)=>c.platos.length?`<h2>${esc(c.nombre)}</h2>`+c.platos.map((p,j)=>`<button class="fila ${p.oculto?"oculto":""}" data-a="editar" data-i="${i}" data-j="${j}">
+    ${p.foto?`<img src="${esc(fu(p.foto))}" loading="lazy" alt="">`:`<div class="nf">📷</div>`}
+    <div class="t"><b>${esc(p.nombre)}</b><br>${p.precio==null?`<span class="s">⚠ sin precio</span>`:eur(p.precio)}${p.oculto?" · agotado":""}${!p.foto?` <span class="s">· sin foto</span>`:""}</div><span>›</span></button>`).join(""):"").join(""));
+}
+function editar(i,j){
+  const p=S.carta.categorias[i].platos[j];W={tipo:"editar",i,j,p,cat:i,orig:JSON.stringify(p)};
+  vista(cab("Corregir plato","lista")+`<label for="nombre">Nombre</label><input type="text" id="nombre" value="${esc(p.nombre)}">
+  <label for="precio">Precio</label><input type="text" inputmode="decimal" id="precio" value="${p.precio==null?"":String(p.precio).replace(".",",")}" placeholder="Sin precio">
+  <label>Sección</label><div class="chips">${S.carta.categorias.map((c,k)=>`<button class="chip ${k===i?"on":""}" data-a="e-cat" data-i="${k}">${esc(c.nombre)}</button>`).join("")}</div>
+  <label>Foto</label><div id="zonaFoto">${selectorFoto(p.foto)}</div>
+  ${extras(p)}
+  <div class="error" id="err"></div>
+  <button class="btn rojo" data-a="e-guardar">✓ Guardar cambios</button>
+  <button class="btn claro" data-a="e-oculto">${p.oculto?"👁 Volver a mostrar en la carta":"🚫 Marcar como agotado (se oculta)"}</button>
+  <button class="btn peligro" data-a="e-borrar">🗑 Eliminar este plato</button>`);
+  W.cb=url=>{p.foto=url;editar(W.i,W.j)};
+}
+
+/* ---------- acciones ---------- */
+const ACC={
+  async entrar(){
+    const clave=$("clave").value;if(!clave){$("err").textContent="Escribe tu clave";return}
+    try{const d=await api("POST","/admin/login/"+RID,JSON.stringify({clave}),{"Content-Type":"application/json"});
+      S.token=d.token;try{sessionStorage.setItem("mw_token",d.token)}catch(e){}
+      if(await cargar())home()}
+    catch(e){$("err").textContent=e.message==="Clave incorrecta"?"Esa clave no es correcta":e.message}
+  },
+  salir(){S.token=null;try{sessionStorage.removeItem("mw_token")}catch(e){}login()},
+  home,lista,nuevo,ajustes,pend:()=>pend(0),
+  diseno(el){W.variante=el.dataset.m;document.querySelectorAll('[data-a="diseno"]').forEach(b=>b.classList.toggle("sel",b.dataset.m===W.variante))},
+  "aj-guardar"(){const n=$("nombre").value.trim();if(!n){$("err").textContent="Escribe el nombre del restaurante";return}
+    S.carta.ajustes={nombre:n,subtitulo:$("sub").value.trim(),variante:W.variante};guardar();home()},
+  "pend-precio"(){const v=precioDe($("precio").value);if(v==null){$("err").textContent="Escribe un precio, por ejemplo 12,50";return}
+    W.actual.p.precio=v;guardar();paso_pend_sig()},
+  "pend-saltar":saltar,
+  cam(){$("f-cam").click()},gal(){$("f-gal").click()},
+  libre(el){W.cb(el.dataset.f)},
+  "n-atras"(){W.paso--;paso_nuevo()},
+  "n-sig"(){
+    const p=W.p;
+    if(W.paso===1){const v=$("nombre").value.trim();if(!v){$("err").textContent="Escribe el nombre del plato";return}p.nombre=v;W.paso=W.cat==null?2:3}
+    else if(W.paso===3){const t=$("precio").value.trim(),v=precioDe(t);if(t&&v==null){$("err").textContent="Escribe un precio, por ejemplo 12,50";return}p.precio=v;W.paso=4}
+    paso_nuevo();
+  },
+  "n-cat"(el){W.cat=Number(el.dataset.i);W.paso=3;paso_nuevo()},
+  "n-cat-nueva"(){
+    vista(cab("Nueva sección","n-atras")+`<div class="pregunta">¿Cómo se llama la sección?</div><input type="text" id="cn" placeholder="Por ejemplo: Vinos"><div class="error" id="err"></div>
+    <button class="btn rojo" data-a="n-cat-crear">Crear sección</button>`);$("cn").focus();
+  },
+  "n-cat-crear"(){const v=$("cn").value.trim();if(!v){$("err").textContent="Escribe un nombre";return}
+    S.carta.categorias.push({id:slug(v)||"cat"+S.carta.categorias.length,nombre:v,sub:{es:"",en:"",de:""},platos:[]});
+    W.cat=S.carta.categorias.length-1;W.paso=3;paso_nuevo()},
+  "n-sinprecio"(){W.p.precio=null;W.paso=4;paso_nuevo()},
+  "n-sinfoto"(){W.paso=5;paso_nuevo()},
+  "n-fin"(){leerDesc(W.p);const p=W.p;p.nuevo=true;delete p.nuevo;S.carta.categorias[W.cat].platos.push(p);guardar();
+    vista(`<div class="grande">🍽️</div><h1 style="text-align:center;margin-top:10px">¡Añadido!</h1><p style="text-align:center"><b>${esc(p.nombre)}</b> ya está en tu carta.</p>
+    <button class="btn rojo" data-a="nuevo">➕ Añadir otro plato</button><button class="btn claro" data-a="home">Volver al inicio</button>`)},
+  tog(el){const k=el.dataset.k;W.p[k]=!W.p[k];el.classList.toggle("on",!!W.p[k])},
+  alerg(el){const p=W.p;p.alergenos=p.alergenos||[];const k=el.dataset.k,x=p.alergenos.indexOf(k);if(x<0)p.alergenos.push(k);else p.alergenos.splice(x,1);el.classList.toggle("on",x<0)},
+  editar(el){editar(Number(el.dataset.i),Number(el.dataset.j))},
+  "e-cat"(el){W.cat=Number(el.dataset.i);document.querySelectorAll('[data-a="e-cat"]').forEach(b=>b.classList.toggle("on",Number(b.dataset.i)===W.cat))},
+  "e-guardar"(){
+    const n=$("nombre").value.trim(),t=$("precio").value.trim(),v=precioDe(t);
+    if(!n){$("err").textContent="El nombre no puede estar vacío";return}
+    if(t&&v==null){$("err").textContent="Escribe un precio, por ejemplo 12,50";return}
+    const p=W.p;p.nombre=n;p.precio=v;leerDesc(p);
+    if(W.cat!==W.i){S.carta.categorias[W.i].platos.splice(W.j,1);S.carta.categorias[W.cat].platos.push(p)}
+    guardar();lista();
+  },
+  "e-oculto"(){W.p.oculto=!W.p.oculto;if(!W.p.oculto)delete W.p.oculto;guardar();lista()},
+  "e-borrar"(){
+    vista(cab("Eliminar plato","lista")+`<div class="pregunta">¿Seguro que quieres eliminar <b>${esc(W.p.nombre)}</b>?</div><p>Dejará de verse en la carta. No se puede deshacer.</p>
+    <button class="btn peligro" data-a="e-borrar-ok">Sí, eliminar</button><button class="btn claro" data-a="lista">No, volver</button>`)},
+  "e-borrar-ok"(){S.carta.categorias[W.i].platos.splice(W.j,1);guardar();lista()}
+};
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-a]");if(!el)return;
+  const a=el.dataset.a;if(ACC[a]){e.preventDefault();ACC[a](el)}
+});
+async function recibir(file){
+  if(!file)return;
+  try{const url=await subirFoto(file);if(W&&W.cb)W.cb(url)}
+  catch(e){if(e.message!=="sesion")toast("No se pudo subir la foto: "+e.message,4000,true)}
+}
+$("f-cam").addEventListener("change",e=>{recibir(e.target.files[0]);e.target.value=""});
+$("f-gal").addEventListener("change",e=>{recibir(e.target.files[0]);e.target.value=""});
+(async()=>{if(S.token&&await cargar())home();else login()})();
+</script>
+</body>
+</html>
